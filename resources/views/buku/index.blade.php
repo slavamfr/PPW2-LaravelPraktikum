@@ -35,6 +35,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>ID</th>
                         <th>Judul Buku</th>
                         <th>Penulis</th>
                         <th>Harga</th>
@@ -45,6 +46,7 @@
                 <tbody>
                     @foreach ($data_buku as $index => $buku)
                     <tr>
+                        <td>{{ $index+1 }}</td>
                         <td>{{ $buku->id }}</td>
                         <td>{{ $buku->judul }}</td>
                         <td>{{ $buku->penulis }}</td>
