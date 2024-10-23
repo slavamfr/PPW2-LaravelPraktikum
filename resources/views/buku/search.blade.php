@@ -36,11 +36,20 @@
                 </div>
             @endif
 
-            <form action="{{route('buku.search')}}" method="get">
-                @csrf
-                <input type="text" name="kata" class="form-control" placeholder="Cari..." style="width: 30%;
-                display: inline; margin-top: 10px; margin-bottom: 10px; float: right;">
-            </form>
+            <div class="d-flex justify-content-between mb-3">
+                <!-- Form for "Tambah Buku" button -->
+                <form action="{{ route('buku.create') }}" method="GET">
+                    <button type="submit" class="btn btn-primary">Tambah Buku</button>
+                </form>
+
+                <!-- Form for search input -->
+                <form action="{{route('buku.search')}}" method="get" class="d-flex">
+                    @csrf
+                    <input type="text" name="kata" class="form-control" placeholder="Cari..." style="width: 300px; margin-left: 10px;">
+                    <button type="submit" class="btn btn-secondary ms-2">Cari</button>
+                </form>
+            </div>
+
 
 
             <table class="table table-stripped">
