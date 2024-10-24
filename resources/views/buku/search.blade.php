@@ -27,7 +27,6 @@
             @endif
 
             <h1>Daftar Buku</h1>
-            <a href="{{ route('buku.create') }}" class="btn btn-primary float-end">Tambah Buku</a>
 
             @if(count($data_buku)) 
                 <div class="alert alert-success">Ditemukan 
