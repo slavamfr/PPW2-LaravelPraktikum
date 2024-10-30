@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="container">
-        @include('layouts.header') <!-- Ensure the header file exists -->
+        @include('layouts.header') 
         @yield('content')          <!-- Only one yield for content -->
     </div>
 
