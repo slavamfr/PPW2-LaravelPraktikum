@@ -35,11 +35,13 @@
                 </div>
             @endif
 
-            <div class="d-flex justify-content-between mb-3">
+            <div class="d-flex justify-content-between mb-3">    
+            @if(Auth::check() && Auth::user()->level == 'admin')
                 <!-- Form for "Tambah Buku" button -->
                 <form action="{{ route('buku.create') }}" method="GET">
                     <button type="submit" class="btn btn-primary">Tambah Buku</button>
                 </form>
+            @endif
 
                 <!-- Form for search input -->
                 <form action="{{route('buku.search')}}" method="get" class="d-flex">
@@ -60,7 +62,9 @@
                         <th>Penulis</th>
                         <th>Harga</th>
                         <th>Tanggal Terbit</th>
+                        @if(Auth::check() && Auth::user()->level == 'admin')
                         <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -73,16 +77,18 @@
                         <td>{{ "Rp. ".number_format($buku->harga, 0, ',','.') }}</td>
                         <td>{{ (new DateTime($buku->tgl_terbit))->format('d/m/Y') }}</td>
                         <td>
-                            <div class="d-grid gap-2">
-                                <form action="{{ route('buku.destroy', $buku->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button onclick="return confirm('Yakin mau dihapus?')" type="submit" class="btn btn-danger w-100">Hapus</button>
-                                </form>
-                                <form action="{{ route('buku.edit', $buku->id) }}" method="GET">
-                                    <button type="submit" class="btn btn-primary w-100">Edit</button>
-                                </form>
-                            </div>
+                            @if(Auth::check() && Auth::user()->level == 'admin')
+                                <div class="d-grid gap-2">
+                                    <form action="{{ route('buku.destroy', $buku->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Yakin mau dihapus?')" type="submit" class="btn btn-danger w-100">Hapus</button>
+                                    </form>
+                                    <form action="{{ route('buku.edit', $buku->id) }}" method="GET">
+                                        <button type="submit" class="btn btn-primary w-100">Edit</button>
+                                    </form>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

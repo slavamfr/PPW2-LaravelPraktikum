@@ -3,6 +3,7 @@
 use App\Http\Controllers\BukuController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginRegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,25 +20,35 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::controller(LoginRegisterController::class)->group(function() {
+    Route::get('/register', 'register')->name('register');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/login', 'login')->name('login');
+    Route::post('/authenticate', 'authenticate')->name('authenticate');
+    Route::get('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/logout','logout');
+    Route::post('/logout', 'logout')->name('logout');
+   });
 
-/* Tampil Data Buku */
-Route::get('/buku', [BukuController::class,'index']);
+Route::controller(BukuController::class)->group(function () {
+    Route::get('/buku', 'index');
+    
+    /* Tambah Buku */
+    Route::get('/buku/create', 'create')->name('buku.create');
+    Route::post('/buku', 'store')->name('buku.store');
+    
+    /* Delete Data Buku */
+    Route::delete('/buku/{id}', 'destroy')->name('buku.destroy');
+    
+    /* Edit Data Buku */
+    Route::get('/buku/{id}/edit', 'edit')->name('buku.edit');
+    Route::post('/buku/{id}', 'update')->name('buku.update');
+    
+    /* Cari Buku */
+    Route::get('/buku/search', 'search')->name('buku.search');
+});
 
-/* Tambah Buku */
-Route::get('/buku/create', [BukuController::class,'create'])->name('buku.create');
-Route::post('/buku', [BukuController::class,'store'])->name('buku.store');
-
-/* Delete Data Buku */
-Route::delete('/buku/{id}', [BukuController::class,'destroy'])->name('buku.destroy');
-
-/* Edit Data Buku */
-Route::get('/buku/{id}/edit', [BukuController::class, 'edit'])->name('buku.edit');
-Route::post('/buku/{id}', [BukuController::class, 'update'])->name('buku.update');
-
-/* Cari Buku */
-Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search');
-
-
+/* About Page */
 Route::get('/about', function () {
     return view('about');
 })->name('about');
