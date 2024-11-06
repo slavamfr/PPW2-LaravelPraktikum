@@ -28,8 +28,10 @@
                 <div class="alert alert-warning">{{ Session::get('pesandelete') }}</div>
             @endif
 
-            <h1>Daftar Buku</h1>
-            <a href="{{ route('buku.create') }}" class="btn btn-primary float-end">Tambah Buku</a>
+            @if(Auth::check() && Auth::user()->level == 'admin')
+                <h1>Daftar Buku</h1>
+                <a href="{{ route('buku.create') }}" class="btn btn-primary float-end">Tambah Buku</a>
+            @endif
 
             <table class="table table-stripped">
                 <thead>
@@ -40,7 +42,9 @@
                         <th>Penulis</th>
                         <th>Harga</th>
                         <th>Tanggal Terbit</th>
+                        @if(Auth::check() && Auth::user()->level == 'admin')
                         <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +56,7 @@
                         <td>{{ $buku->penulis }}</td>
                         <td>{{ "Rp. ".number_format($buku->harga, 0, ',','.') }}</td>
                         <td>{{ (new DateTime($buku->tgl_terbit))->format('d/m/Y') }}</td>
+                        @if(Auth::check() && Auth::user()->level == 'admin')
                         <td>
                             <div class="d-grid gap-2">
                                 <form action="{{ route('buku.destroy', $buku->id) }}" method="POST">
@@ -64,6 +69,7 @@
                                 </form>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>
