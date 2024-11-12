@@ -6,17 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginRegisterController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -43,14 +32,14 @@ Route::controller(BukuController::class)->group(function () {
     
     /* Edit Data Buku */
     Route::get('/buku/{id}/edit', 'edit')->name('buku.edit');
-    Route::post('/buku/{id}', 'update')->name('buku.update');
+    Route::put('/buku/{id}', 'update')->name('buku.update');
     
     /* Cari Buku */
     Route::get('/buku/search', 'search')->name('buku.search');
 });
 
 /* Route untuk menghapus gambar galeri */
-Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete'); // Tambahkan route ini
 
 /* About Page */
 Route::get('/about', function () {

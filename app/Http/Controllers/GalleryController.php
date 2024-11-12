@@ -15,14 +15,16 @@ class GalleryController extends Controller
     {
         $gallery = Gallery::findOrFail($id);
 
-        // Optional: Delete the image file from storage
+        // Hapus file gambar dari penyimpanan jika ada
         if (file_exists(public_path($gallery->path))) {
             unlink(public_path($gallery->path));
         }
 
+        // Hapus rekaman galeri dari database
         $gallery->delete();
 
         return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
     }
+
 
 }
