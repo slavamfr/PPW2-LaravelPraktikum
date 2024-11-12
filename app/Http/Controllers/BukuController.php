@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Buku;
+use App\Models\Gallery;
 use Illuminate\Pagination\Paginator;
+use Intervention\Image\Facades\Image;
 
 class BukuController extends Controller
 {
@@ -51,22 +53,38 @@ class BukuController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $request->validate([
             'judul' => 'required|string',
             'penulis' => 'required|string|max:30',
             'harga' => 'required|numeric',
-            'tgl_terbit' => 'required|date'
+            'tgl_terbit' => 'required|date',
+            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048'
         ]);
-        
-        $buku = new Buku();
-        $buku->judul = $request->judul;
-        $buku->penulis = $request->penulis;
-        $buku->harga = $request->harga;
-        $buku->tgl_terbit = $request->tgl_terbit;
-        $buku->save();
 
-        return redirect('/buku')->with('pesanstore', 'Data Buku Berhasil di Simpan');
+        $filename = null;
+        $filepath = null;
+
+        if ($request->hasFile('thumbnail')) {
+            $filename = time().'-' . $request->thumbnail->getClientOriginalName();
+            $filepath = $request->file('thumbnail')->storeAs('uploads', $filename, 'public');
+        }
+
+        Image::make(storage_path('app/public/uploads/' . $filename))
+            ->fit(240, 320)
+            ->save();
+
+        Buku::create([
+            'judul' => $request->judul,
+            'penulis' => $request->penulis,
+            'harga' => $request->harga,
+            'tgl_terbit' => $request->tgl_terbit,
+            'filename' => $filename,
+            'filepath' => $filepath ? '/storage/' . $filepath : null,
+        ]);
+
+        return redirect('/buku')->with('pesanstore', 'Buku berhasil ditambahkan!');
     }
+
 
     public function destroy(string $id)
     {
@@ -96,12 +114,47 @@ class BukuController extends Controller
     public function update(Request $request, string $id)
     {
         $buku = Buku::find($id);
-        $buku->judul = $request->input('judul');
-        $buku->penulis = $request->input('penulis');
-        $buku->harga = $request->input('harga');
-        $buku->tgl_terbit = $request->input('tgl_terbit');
-        $buku->save();
+
+        $request->validate([
+            'judul' => 'required|string',
+            'penulis' => 'required|string|max:30',
+            'harga' => 'required|numeric',
+            'tgl_terbit' => 'required|date',
+            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048',
+            'gallery.*' => 'image|mimes:jpeg,jpg,png|max:2048' // Validation for multiple gallery images
+        ]);
+
+        $filename = time() . '-' . $request->thumbnail->getClientOriginalName();
+        $filepath = $request->file('thumbnail')->storeAs('uploads', $filename, 'public');
+
+        Image::make(storage_path('app/public/uploads/' . $filename))
+            ->fit(240, 320)
+            ->save();
+
+        $buku->update([
+            'judul' => $request->judul,
+            'penulis' => $request->penulis,
+            'harga' => $request->harga,
+            'tgl_terbit' => $request->tgl_terbit,
+            'filename' => $filename,
+            'filepath' => '/storage/' . $filepath,
+        ]);
+
+        if ($request->file('gallery')) {
+            foreach ($request->file('gallery') as $key => $file) {
+                $fileName = time() . '-' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('uploads', $fileName, 'public');
+
+                Gallery::create([
+                    'nama_galeri' => $fileName,
+                    'path' => '/storage/' . $filePath,
+                    'foto' => $fileName,
+                    'buku_id' => $id,
+                ]);
+            }
+        }
 
         return redirect('/buku')->with('pesanupdate', 'Buku berhasil diupdate!');
     }
+
 }

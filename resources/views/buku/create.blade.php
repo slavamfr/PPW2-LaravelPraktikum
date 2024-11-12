@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form method="post" action="{{ route('buku.store') }}">
+        <form method="post" action="{{ route('buku.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="judul" class="form-label">Judul</label>
@@ -45,6 +45,11 @@
                 <input type="date" id="tgl_terbit" name="tgl_terbit" class="date form-control" placeholder="yyyy/mm/dd">
             </div>
 
+            <div class="mb-3">
+                <label for="thumbnail" class="form-label">Thumbnail</label>
+                <input type="file" class="form-control" id="thumbnail" name="thumbnail">
+            </div>
+
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="{{ url('/buku') }}" class="btn btn-secondary">Kembali</a>
@@ -54,4 +59,3 @@
     @endsection
 </body>
 </html>
-
