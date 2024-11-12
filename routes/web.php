@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\GalleryController; // Tambahkan import ini
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginRegisterController;
@@ -26,9 +27,9 @@ Route::controller(LoginRegisterController::class)->group(function() {
     Route::get('/login', 'login')->name('login');
     Route::post('/authenticate', 'authenticate')->name('authenticate');
     Route::get('/dashboard', 'dashboard')->name('dashboard');
-    Route::get('/logout','logout');
+    Route::get('/logout', 'logout');
     Route::post('/logout', 'logout')->name('logout');
-   });
+});
 
 Route::controller(BukuController::class)->group(function () {
     Route::get('/buku', 'index');
@@ -48,7 +49,11 @@ Route::controller(BukuController::class)->group(function () {
     Route::get('/buku/search', 'search')->name('buku.search');
 });
 
+/* Route untuk menghapus gambar galeri */
+Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+
 /* About Page */
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
