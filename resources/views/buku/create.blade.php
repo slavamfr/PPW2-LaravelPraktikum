@@ -47,7 +47,7 @@
 
             <div class="mb-3">
                 <label for="thumbnail" class="form-label">Thumbnail</label>
-                <input type="file" class="form-control" id="thumbnail" name="thumbnail">
+                <input type="file" class="form-control" name="thumbnail" id="thumbnail">
             </div>
 
             <div class="d-flex justify-content-between">

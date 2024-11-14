@@ -51,8 +51,6 @@
                 </form>
             </div>
 
-
-
             <table class="table table-stripped">
                 <thead>
                     <tr>

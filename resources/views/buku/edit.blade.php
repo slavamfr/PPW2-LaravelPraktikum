@@ -45,12 +45,11 @@
                 <input type="date" class="form-control" id="tgl_terbit" name="tgl_terbit" value="{{ $buku->tgl_terbit }}">
             </div>
 
-            <div class="col-span-full mt-6">
-                <label for="thumbnail" class="block text-sm font-medium leading-6 text-gray-900">Thumbnail</label>
-                <div class="mt-2">
-                    <input type="file" name="thumbnail" id="thumbnail">
-                </div>
+            <div class="mb-3">
+                <label for="thumbnail" class="form-label">Thumbnail</label>
+                <input type="file" class="form-control" name="thumbnail" id="thumbnail">
             </div>
+
 
             <div class="col-span-full mt-5">
                 <label for="gallery" class="block text-sm font-medium leading-6 text-gray-900">Gallery</label>
