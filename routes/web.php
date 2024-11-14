@@ -38,8 +38,9 @@ Route::controller(BukuController::class)->group(function () {
     Route::get('/buku/search', 'search')->name('buku.search');
 });
 
-/* Route untuk menghapus gambar galeri */
-Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete'); // Tambahkan route ini
+
+Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+
 
 /* About Page */
 Route::get('/about', function () {

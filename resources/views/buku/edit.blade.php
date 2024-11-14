@@ -11,6 +11,13 @@
     @extends('layout')
 
     @section('content')
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    
     <div class="container mt-5">
         <h4 class="mb-4">Edit Buku</h4>
 
@@ -52,17 +59,6 @@
                 </div>
                 <button type="button" class="btn btn-primary mt-2" onclick="addFileInput()">Tambah Input</button>
             </div>
-
-            <script type="text/javascript">
-                function addFileInput() {
-                    var div = document.getElementById('fileinput_wrapper');
-                    var input = document.createElement('input');
-                    input.type = 'file';
-                    input.name = 'gallery[]';
-                    input.classList.add('block', 'w-full', 'mb-3');
-                    div.appendChild(input);
-                }
-            </script>
 
             <!-- Menampilkan galeri item yang sudah ada -->
             <div class="gallery_items mt-5">

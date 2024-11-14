@@ -7,7 +7,7 @@ use App\Models\Buku;
 use App\Models\Gallery;
 use Illuminate\Pagination\Paginator;
 use Intervention\Image\Facades\Image;
-
+use Illuminate\Support\Facades\Storage; // Tambahkan ini
 
 class GalleryController extends Controller
 {
@@ -16,15 +16,13 @@ class GalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
 
         // Hapus file gambar dari penyimpanan jika ada
-        if (file_exists(public_path($gallery->path))) {
-            unlink(public_path($gallery->path));
+        if (Storage::exists($gallery->path)) {
+            Storage::delete($gallery->path);
         }
 
-        // Hapus rekaman galeri dari database
+        // Hapus record dari database
         $gallery->delete();
 
         return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
     }
-
-
 }
