@@ -10,6 +10,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/apiapi', function () {
+    return view('apiapi');
+});
+
 Route::controller(LoginRegisterController::class)->group(function() {
     Route::get('/register', 'register')->name('register');
     Route::post('/store', 'store')->name('store');
