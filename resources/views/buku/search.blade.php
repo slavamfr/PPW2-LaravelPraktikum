@@ -51,13 +51,12 @@
                 </form>
             </div>
 
-
-
             <table class="table table-stripped">
                 <thead>
                     <tr>
                         <th>No</th>
                         <th>ID</th>
+                        <th>Poster</th>
                         <th>Judul Buku</th>
                         <th>Penulis</th>
                         <th>Harga</th>
@@ -72,6 +71,13 @@
                     <tr>
                         <td>{{ $index+1 }}</td>
                         <td>{{ $buku->id }}</td>
+                        <td>
+                            @if ($buku->filepath)
+                                <div class="relative h-10 w-10">
+                                    <img class="h-full w-full rounded-full object-center" src="{{ asset($buku->filepath) }}" alt="Thumbnail" />
+                                </div>
+                            @endif
+                        </td>
                         <td>{{ $buku->judul }}</td>
                         <td>{{ $buku->penulis }}</td>
                         <td>{{ "Rp. ".number_format($buku->harga, 0, ',','.') }}</td>

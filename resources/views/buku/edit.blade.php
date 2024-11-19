@@ -11,6 +11,13 @@
     @extends('layout')
 
     @section('content')
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    
     <div class="container mt-5">
         <h4 class="mb-4">Edit Buku</h4>
 
@@ -38,12 +45,11 @@
                 <input type="date" class="form-control" id="tgl_terbit" name="tgl_terbit" value="{{ $buku->tgl_terbit }}">
             </div>
 
-            <div class="col-span-full mt-6">
-                <label for="thumbnail" class="block text-sm font-medium leading-6 text-gray-900">Thumbnail</label>
-                <div class="mt-2">
-                    <input type="file" name="thumbnail" id="thumbnail">
-                </div>
+            <div class="mb-3">
+                <label for="thumbnail" class="form-label">Thumbnail</label>
+                <input type="file" class="form-control" name="thumbnail" id="thumbnail">
             </div>
+
 
             <div class="col-span-full mt-5">
                 <label for="gallery" class="block text-sm font-medium leading-6 text-gray-900">Gallery</label>
@@ -52,17 +58,6 @@
                 </div>
                 <button type="button" class="btn btn-primary mt-2" onclick="addFileInput()">Tambah Input</button>
             </div>
-
-            <script type="text/javascript">
-                function addFileInput() {
-                    var div = document.getElementById('fileinput_wrapper');
-                    var input = document.createElement('input');
-                    input.type = 'file';
-                    input.name = 'gallery[]';
-                    input.classList.add('block', 'w-full', 'mb-3');
-                    div.appendChild(input);
-                }
-            </script>
 
             <!-- Menampilkan galeri item yang sudah ada -->
             <div class="gallery_items mt-5">

@@ -1,25 +1,21 @@
 <?php
 
 use App\Http\Controllers\BukuController;
-use App\Http\Controllers\GalleryController; // Tambahkan import ini
+use App\Http\Controllers\GalleryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginRegisterController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\Api\BookApiController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/apiapi', function () {
+    return view('apiapi');
+});
+
+Route::post('/books', [BookApiController::class, 'store']);
 
 Route::controller(LoginRegisterController::class)->group(function() {
     Route::get('/register', 'register')->name('register');
@@ -43,14 +39,15 @@ Route::controller(BukuController::class)->group(function () {
     
     /* Edit Data Buku */
     Route::get('/buku/{id}/edit', 'edit')->name('buku.edit');
-    Route::post('/buku/{id}', 'update')->name('buku.update');
+    Route::put('/buku/{id}', 'update')->name('buku.update');
     
     /* Cari Buku */
     Route::get('/buku/search', 'search')->name('buku.search');
 });
 
-/* Route untuk menghapus gambar galeri */
+
 Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+
 
 /* About Page */
 Route::get('/about', function () {
