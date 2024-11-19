@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\BukuController;
-use App\Http\Controllers\GalleryController; // Tambahkan import ini
+use App\Http\Controllers\GalleryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginRegisterController;
+use App\Http\Controllers\Api\BookApiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,6 +14,8 @@ Route::get('/', function () {
 Route::get('/apiapi', function () {
     return view('apiapi');
 });
+
+Route::post('/books', [BookApiController::class, 'store']);
 
 Route::controller(LoginRegisterController::class)->group(function() {
     Route::get('/register', 'register')->name('register');
