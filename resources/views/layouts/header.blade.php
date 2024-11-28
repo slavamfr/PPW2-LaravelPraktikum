@@ -9,6 +9,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/buku/search">Home With Search</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('reviews*') ? 'active' : '' }}" href="{{ route('reviews.index') }}">Reviews</a>
+                    </li>
                     @guest
                         <li class="nav-item">
                             <a class="nav-link {{ (request()->is('login')) ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
