@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -19,8 +20,14 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register any authentication / authorization services.
      */
-    public function boot(): void
+    public function boot()
     {
-        //
+        Gate::define('manage-reviews', function ($user) {
+            return in_array($user->level, ['admin', 'internal_reviewer']);
+        });
+
+        Gate::define('view-reviews', function ($user) {
+            return true; // Allow all authenticated users to view reviews
+        });
     }
 }
