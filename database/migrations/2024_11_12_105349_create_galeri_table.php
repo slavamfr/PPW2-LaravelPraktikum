@@ -18,12 +18,10 @@ return new class extends Migration
             $table->text('keterangan');
             $table->string('foto');
             $table->unsignedBigInteger('buku_id');
-        
             $table->foreign('buku_id')
                   ->references('id')
                   ->on('books')
                   ->onDelete('cascade');
-        
             $table->timestamps();
         });
         

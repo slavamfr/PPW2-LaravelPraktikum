@@ -9,7 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Gallery extends Model
 {
     protected $table = 'galeri';
-    protected $fillable = ['id', 'nama_galeri', 'filepath', 'foto', 'buku_id'];
+    protected $fillable = [
+        'nama_galeri',
+        'foto',
+        'filepath',
+        'buku_id'
+    ];
 
     public function buku(): BelongsTo
     {

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Edit Buku - Belajar Model PPW2</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+4telH+8AMfyDm0ynQ6K8K7AjGpG0" crossorigin="anonymous">
 </head>
 <body>
     @extends('layout')
@@ -50,31 +49,36 @@
                 <input type="file" class="form-control" name="thumbnail" id="thumbnail">
             </div>
 
-
-            <div class="col-span-full mt-5">
-                <label for="gallery" class="block text-sm font-medium leading-6 text-gray-900">Gallery</label>
-                <div class="mt-2" id="fileinput_wrapper">
-                    <input type="file" name="gallery[]" class="block w-full mb-3">
+            <div class="mb-3">
+                <label class="form-label">Gallery Images</label>
+                <div id="gallery-inputs-container">
+                    <div class="input-group mb-2">
+                        <input type="file" class="form-control" name="gallery[]" accept="image/*" onchange="previewImage(this)">
+                        <button type="button" class="btn btn-danger remove-input" onclick="removeInput(this)">Remove</button>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" onclick="addFileInput()">Tambah Input</button>
+                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addInput()">Add More Images</button>
             </div>
 
             <!-- Menampilkan galeri item yang sudah ada -->
-            <div class="gallery_items mt-5">
+            <div class="row gallery_items mt-5">
                 @foreach($buku->galleries as $gallery)
-                    <div class="gallery_item mb-3">
-                        <img 
-                            class="rounded object-cover"
-                            src="{{ asset($gallery->path) }}"
-                            alt="Galeri Gambar"
-                            width="200"
-                        />
-                        <!-- Form untuk menghapus gambar -->
-                        <form method="POST" action="{{ route('gallery.delete', $gallery->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger mt-2">Hapus</button>
-                        </form>
+                    <div class="col-md-3 mb-3">
+                        <div class="position-relative">
+                            <img 
+                                class="img-thumbnail"
+                                src="{{ asset('storage/uploads/' . $gallery->foto) }}"
+                                alt="{{ $gallery->nama_galeri }}"
+                                style="max-width: 150px; object-fit: cover; width: 100%;"
+                            />
+                            <form action="{{ route('gallery.destroy', $gallery->id) }}" method="POST" class="mt-2">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(this.form)">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -88,5 +92,47 @@
     @endsection
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-9ndCyUa0Jn3WL8pnhD9WmH8eKe6i5k90tqPjsqfCI5Ff5f0vuHV8/qb5mQd/gtds" crossorigin="anonymous"></script>
+    <script>
+        function addInput() {
+            const container = document.getElementById('gallery-inputs-container');
+            const newInput = document.createElement('div');
+            newInput.className = 'input-group mb-2';
+            newInput.innerHTML = `
+                <input type="file" class="form-control" name="gallery[]" accept="image/*" onchange="previewImage(this)">
+                <button type="button" class="btn btn-danger remove-input" onclick="removeInput(this)">Remove</button>
+            `;
+            container.appendChild(newInput);
+        }
+
+        function removeInput(button) {
+            const inputGroup = button.parentElement;
+            inputGroup.remove();
+        }
+
+        function previewImage(input) {
+            const previewsContainer = document.getElementById('image-previews');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'col-md-3 mb-3';
+                
+                reader.onload = function(e) {
+                    previewDiv.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail" style="height: 200px; object-fit: cover;">
+                    `;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+                previewsContainer.appendChild(previewDiv);
+            }
+        }
+
+        function confirmDelete(form) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                form.submit();
+            }
+        }
+    </script>
 </body>
 </html>

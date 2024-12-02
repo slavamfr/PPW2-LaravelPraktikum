@@ -46,8 +46,7 @@ Route::controller(BukuController::class)->group(function () {
     Route::get('/buku/search', 'search')->name('buku.search');
 });
 
-
-Route::delete('/gallery/{id}', [GalleryController::class, 'destroy'])->name('gallery.delete');
+Route::delete('/gallery/{id}', [BukuController::class, 'destroyGallery'])->name('gallery.destroy');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
