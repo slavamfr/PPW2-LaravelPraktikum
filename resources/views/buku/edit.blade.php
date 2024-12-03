@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Edit Buku - Belajar Model PPW2</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     @extends('layout')
@@ -65,33 +66,37 @@
 
             <div class="mb-3">
                 <label class="form-label">Gallery Images</label>
-                <div id="gallery-inputs-container">
-                    <div class="input-group mb-2">
-                        <input type="file" class="form-control" name="gallery[]" accept="image/*" onchange="previewImage(this)">
-                        <button type="button" class="btn btn-danger remove-input" onclick="removeInput(this)">Remove</button>
+                <div id="gallery-uploads">
+                    <div class="row mb-3 gallery-input-group">
+                        <div class="col-md-4">
+                            <input type="file" class="form-control" name="gallery_images[]" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="gallery_descriptions[]" placeholder="Image description">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-success add-gallery-btn">+</button>
+                            <button type="button" class="btn btn-danger remove-gallery-btn" style="display:none;">-</button>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addInput()">Add More Images</button>
             </div>
 
-            <!-- Menampilkan galeri item yang sudah ada -->
+            <!-- Existing Gallery Display -->
             <div class="row gallery_items mt-5">
+                <h4>Existing Gallery Images</h4>
                 @foreach($buku->galleries as $gallery)
-                    <div class="col-md-3 mb-3">
-                        <div class="position-relative">
-                            <img 
-                                class="img-thumbnail"
-                                src="{{ asset('storage/uploads/' . $gallery->foto) }}"
-                                alt="{{ $gallery->nama_galeri }}"
-                                style="max-width: 150px; object-fit: cover; width: 100%;"
-                            />
-                            <form action="{{ route('gallery.destroy', $gallery->id) }}" method="POST" class="mt-2">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(this.form)">
+                    <div class="col-md-3 mb-3 gallery-item" id="gallery-{{$gallery->id}}">
+                        <div class="card">
+                            <img src="{{ asset($gallery->foto) }}" class="card-img-top" alt="Gallery Image">
+                            <div class="card-body">
+                                <p class="card-text">{{ $gallery->keterangan }}</p>
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm delete-gallery" 
+                                        data-gallery-id="{{ $gallery->id }}">
                                     Delete
                                 </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -107,46 +112,43 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-9ndCyUa0Jn3WL8pnhD9WmH8eKe6i5k90tqPjsqfCI5Ff5f0vuHV8/qb5mQd/gtds" crossorigin="anonymous"></script>
     <script>
-        function addInput() {
-            const container = document.getElementById('gallery-inputs-container');
-            const newInput = document.createElement('div');
-            newInput.className = 'input-group mb-2';
-            newInput.innerHTML = `
-                <input type="file" class="form-control" name="gallery[]" accept="image/*" onchange="previewImage(this)">
-                <button type="button" class="btn btn-danger remove-input" onclick="removeInput(this)">Remove</button>
-            `;
-            container.appendChild(newInput);
-        }
-
-        function removeInput(button) {
-            const inputGroup = button.parentElement;
-            inputGroup.remove();
-        }
-
-        function previewImage(input) {
-            const previewsContainer = document.getElementById('image-previews');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.add-gallery-btn').addEventListener('click', function() {
+            const template = document.querySelector('.gallery-input-group').cloneNode(true);
+            template.querySelector('input[type="file"]').value = '';
+            template.querySelector('input[type="text"]').value = '';
+            template.querySelector('.add-gallery-btn').style.display = 'none';
+            template.querySelector('.remove-gallery-btn').style.display = 'inline-block';
             
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                const previewDiv = document.createElement('div');
-                previewDiv.className = 'col-md-3 mb-3';
-                
-                reader.onload = function(e) {
-                    previewDiv.innerHTML = `
-                        <img src="${e.target.result}" class="img-thumbnail" style="height: 200px; object-fit: cover;">
-                    `;
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-                previewsContainer.appendChild(previewDiv);
-            }
-        }
+            document.getElementById('gallery-uploads').appendChild(template);
+        });
 
-        function confirmDelete(form) {
-            if (confirm('Are you sure you want to delete this image?')) {
-                form.submit();
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-gallery-btn')) {
+                e.target.closest('.gallery-input-group').remove();
             }
-        }
+        });
+
+        document.querySelectorAll('.delete-gallery').forEach(button => {
+            button.addEventListener('click', function() {
+                if(confirm('Are you sure you want to delete this image?')) {
+                    const galleryId = this.dataset.galleryId;
+                    fetch(`/gallery/delete/${galleryId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            document.getElementById(`gallery-${galleryId}`).remove();
+                        }
+                    });
+                }
+            });
+        });
+    });
     </script>
 </body>
 </html>

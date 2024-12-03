@@ -7,6 +7,8 @@ use App\Models\Buku;
 use App\Models\Gallery;
 use Illuminate\Pagination\Paginator;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class BukuController extends Controller
 {
@@ -111,56 +113,45 @@ class BukuController extends Controller
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $buku = Buku::find($id);
-
-        $request->validate([
-            'judul' => 'required|string',
-            'penulis' => 'required|string|max:30',
+        $this->validate($request, [
+            'judul' => 'required',
+            'penulis' => 'required',
             'harga' => 'required|numeric',
             'tgl_terbit' => 'required|date',
-            'thumbnail' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
-            'gallery.*' => 'image|mimes:jpeg,jpg,png|max:2048',
-            'discount' => 'nullable|numeric',
+            'gallery_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_descriptions.*' => 'nullable|string'
         ]);
 
-        // Initialize update data
-        $updateData = [
-            'judul' => $request->judul,
-            'penulis' => $request->penulis,
-            'harga' => $request->harga,
-            'tgl_terbit' => $request->tgl_terbit,
-            'discount' => $request->discount,
-            'editorial_pick' => $request->has('editorial_pick') ? 1 : 0,
-        ];
-
-        // Process thumbnail only if new file is uploaded
+        $buku = Buku::findOrFail($id);
+        
+        // Update basic book info
+        $updateData = $request->only(['judul', 'penulis', 'harga', 'tgl_terbit', 'discount']);
+        $updateData['editorial_pick'] = $request->has('editorial_pick') ? 1 : 0;
+        
+        // Handle thumbnail update if provided
         if ($request->hasFile('thumbnail')) {
-            $filename = time() . '-' . $request->thumbnail->getClientOriginalName();
-            $filepath = $request->file('thumbnail')->storeAs('uploads', $filename, 'public');
-
-            Image::make(storage_path('app/public/uploads/' . $filename))
-                ->fit(240, 320)
-                ->save();
-
-            $updateData['filename'] = $filename;
-            $updateData['filepath'] = '/storage/' . $filepath;
+            $thumbnail = $request->file('thumbnail');
+            $filename = time() . '_' . $thumbnail->getClientOriginalName();
+            $thumbnail->move(public_path('storage/images'), $filename);
+            $updateData['filepath'] = 'storage/images/' . $filename;
         }
 
-        // Process gallery images if any
-        if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $file) {
-                $fileName = time() . '-' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads', $fileName, 'public');
-
-                Gallery::create([
-                    'nama_galeri' => $fileName,
-                    'foto' => $fileName,
-                    'keterangan' => $request->keterangan,
-                    'filepath' => '/storage/' . $filePath,
-                    'buku_id' => $id
-                ]);
+        // Handle gallery uploads
+        if ($request->hasFile('gallery_images')) {
+            foreach($request->file('gallery_images') as $key => $image) {
+                if ($image) {
+                    $filename = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('storage/gallery'), $filename);
+                    
+                    Gallery::create([
+                        'buku_id' => $buku->id,
+                        'nama_galeri' => $filename,
+                        'foto' => 'storage/gallery/' . $filename,
+                        'keterangan' => $request->gallery_descriptions[$key] ?? '',
+                    ]);
+                }
             }
         }
 
@@ -169,23 +160,17 @@ class BukuController extends Controller
         return redirect('/buku')->with('pesanupdate', 'Buku berhasil diupdate!');
     }
 
-    public function destroyGallery(string $id)
+    public function deleteGallery($id)
     {
         $gallery = Gallery::find($id);
-        
-        if ($gallery) {
+        if($gallery) {
             // Delete file from storage
-            if (file_exists(public_path('storage/uploads/' . $gallery->foto))) {
-                unlink(public_path('storage/uploads/' . $gallery->foto));
+            if(File::exists(public_path($gallery->foto))) {
+                File::delete(public_path($gallery->foto));
             }
-            
-            // Delete database record
             $gallery->delete();
-            
-            return redirect()->back()->with('success', 'Image deleted successfully');
+            return response()->json(['success' => true]);
         }
-        
-        return redirect()->back()->with('error', 'Image not found');
+        return response()->json(['success' => false]);
     }
-
 }
