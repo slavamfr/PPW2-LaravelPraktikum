@@ -157,6 +157,7 @@ class BukuController extends Controller
                 Gallery::create([
                     'nama_galeri' => $fileName,
                     'foto' => $fileName,
+                    'keterangan' => $request->keterangan,
                     'filepath' => '/storage/' . $filePath,
                     'buku_id' => $id
                 ]);
