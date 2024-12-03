@@ -40,8 +40,22 @@
             </div>
 
             <div class="mb-3">
+                <label for="discount" class="form-label">Discount</label>
+                <input type="text" class="form-control" id="discount" name="discount" value="{{ $buku->discount }}">
+            </div>
+
+            <div class="mb-3">
                 <label for="tgl_terbit" class="form-label">Tanggal Terbit</label>
                 <input type="date" class="form-control" id="tgl_terbit" name="tgl_terbit" value="{{ $buku->tgl_terbit }}">
+            </div>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="editorial_pick" 
+                       name="editorial_pick" value="1" 
+                       {{ $buku->editorial_pick ? 'checked' : '' }}>
+                <label class="form-check-label" for="editorial_pick">
+                    Editorial Pick
+                </label>
             </div>
 
             <div class="mb-3">

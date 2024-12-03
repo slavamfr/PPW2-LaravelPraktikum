@@ -26,14 +26,33 @@
                 <div class="alert alert-warning">{{ Session::get('pesandelete') }}</div>
             @endif
 
-            <h1>Daftar Buku</h1>
-
             @if(count($data_buku)) 
                 <div class="alert alert-success">Ditemukan 
                     <strong>{{count($data_buku)}}</strong> 
                     data dengan kata: <strong>{{ $cari }}</strong>
                 </div>
             @endif
+
+            <h1 class="text-decoration-underline">Daftar Buku</h1><br>
+
+            <div class="editorial-picks mb-4">
+            <h3>Editorial Picks</h3>
+            <div class="row">
+                @foreach(App\Models\Buku::getEditorialPicks() as $buku)
+                    <div class="col-md-2">
+                        <div class="card">
+                            @if($buku->filepath)
+                                <img src="{{ asset($buku->filepath) }}" class="card-img-top">
+                            @endif
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $buku->judul }}</h5>
+                                <p class="card-text">{{ $buku->penulis }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
 
             <div class="d-flex justify-content-between mb-3">    
             @if(Auth::check() && Auth::user()->level == 'admin')
@@ -78,9 +97,24 @@
                                 </div>
                             @endif
                         </td>
-                        <td>{{ $buku->judul }}</td>
+                        <td>
+                            {{ $buku->judul }}<br>
+                            @if($buku->editorial_pick)
+                                <span class="badge bg-success">Editorial Pick!</span>
+                            @endif
+                        </td>
                         <td>{{ $buku->penulis }}</td>
-                        <td>{{ "Rp. ".number_format($buku->harga, 0, ',','.') }}</td>
+                        <td>
+                            <div class="price-info">
+                                @if($buku->discount > 0)
+                                    <del style="color: #FF0000">Rp {{ number_format($buku->harga, 0, ',', '.') }}</del><br>
+                                    <span class="badge bg-success">Diskon {{ $buku->discount }}%</span><br>
+                                    <strong>Rp {{ number_format($buku->getDiscountedPrice(), 0, ',', '.') }}</strong>
+                                @else
+                                    <strong>Rp {{ number_format($buku->harga, 0, ',', '.') }}</strong>
+                                @endif
+                            </div>
+                        </td>
                         <td>{{ (new DateTime($buku->tgl_terbit))->format('d/m/Y') }}</td>
                         <td>
                             @if(Auth::check() && Auth::user()->level == 'admin')

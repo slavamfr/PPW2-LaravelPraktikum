@@ -121,7 +121,8 @@ class BukuController extends Controller
             'harga' => 'required|numeric',
             'tgl_terbit' => 'required|date',
             'thumbnail' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
-            'gallery.*' => 'image|mimes:jpeg,jpg,png|max:2048'
+            'gallery.*' => 'image|mimes:jpeg,jpg,png|max:2048',
+            'discount' => 'nullable|numeric',
         ]);
 
         // Initialize update data
@@ -130,6 +131,8 @@ class BukuController extends Controller
             'penulis' => $request->penulis,
             'harga' => $request->harga,
             'tgl_terbit' => $request->tgl_terbit,
+            'discount' => $request->discount,
+            'editorial_pick' => $request->has('editorial_pick') ? 1 : 0,
         ];
 
         // Process thumbnail only if new file is uploaded
@@ -145,8 +148,6 @@ class BukuController extends Controller
             $updateData['filepath'] = '/storage/' . $filepath;
         }
 
-        $buku->update($updateData);
-
         // Process gallery images if any
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
@@ -161,6 +162,8 @@ class BukuController extends Controller
                 ]);
             }
         }
+
+        $buku->update($updateData);
 
         return redirect('/buku')->with('pesanupdate', 'Buku berhasil diupdate!');
     }
